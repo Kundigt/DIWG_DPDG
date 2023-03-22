@@ -1,0 +1,573 @@
+STATUS OF THIS MEMO
+This memo provides information to the National Aeronautics and Space Administration (NASA) Earth
+Science Data Systems (ESDS) community. This memo describes a “Suggested Practice” and does not
+specify an ESDS standard of any kind. Distribution of this memo is unlimited.
+CHANGE EXPLANATION
+This is a minor update to the original version (Version 1.0) of the document. Several editorial
+corrections have been made, but no new content has been introduced that was not covered in
+Version 1.0. The changes have been made in response to the previous reviewers’ comments that we
+had not been able to address in Version 1.0 , as well as several changes that were identified as the
+Quick Start Guide (QSG) to the EOSDIS Data Product Development Guide (DPDG) for Data Producers
+was developed. Some of the significant changes are: addition of Figure 2 to clarify the difference
+between dimensions and coordinates; addition of references to the ESO page where Strengths,
+Weaknesses, Applicability, and Limitations (SWAL) are given for the various data formats; and
+adopting simpler language from the QSG.
+COPYRIGHT NOTICE
+This is a work of the U.S. Government and is not subject to copyright protection in the United States.
+Foreign copyrights may apply.
+SUGGESTED CITATION
+Ramapriyan, H. K., and P. J. T. Leonard. 2021. Data Product Development Guide (DPDG) for Data
+Producers version1.1. NASA Earth Science Data and Information System Standards Office, 21
+October 2021. https://doi.org/10.5067/DOC/ESO/RFC-041VERSION1
+ABSTRACT
+This Data Product Development Guide (DPDG) for Data Producers was produced for the Earth
+Observing System Data and Information System (EOSDIS) by the DPDG Working Group, one of the
+Earth Science Data System Working Groups (ESDSWGs), to aid in the development of NASA Earth
+Science data products.
+The DPDG is intended for those who develop Earth Science data products and are collectively
+referred to as “data producers.” This guide is primarily intended for producers of Earth Science data
+products derived from remote sensing data, and particularly for the development of Level 1B
+through Level 4 products. However, producers of related data products including Level 0 and 1A
+satellite data, airborne and ground-based data products will also find useful guidance.
+TABLE OF CONTENTS
+STATUS OF THIS MEMO ............................................................................................................... 2
+CHANGE EXPLANATION................................................................................................................ 2
+COPYRIGHT NOTICE...................................................................................................................... 2
+SUGGESTED CITATION.................................................................................................................. 2
+ABSTRACT ..................................................................................................................................... 2
+1 INTRODUCTION................................................................................................................ 5
+2 DATA PRODUCT DESIGN PROCESS................................................................................... 7
+2.1 Requirements: Determining User Community Needs .................................................... 7
+2.2 Design: What Constitutes a Data Product Design........................................................... 8
+2.3 Implementation: Creating Sample Data Files.................................................................. 9
+2.4 Testing: Evaluating Sample Data Products...................................................................... 9
+2.5 Review: Independent Evaluation of the Data Product.................................................... 9
+3 SELECTING A DATA PRODUCT FORMAT ........................................................................ 10
+3.1 Recommended Formats ................................................................................................ 11
+3.1.1 NetCDF-4........................................................................................................................ 12
+3.1.2 GeoTIFF .......................................................................................................................... 13
+3.2 Recognized Formats....................................................................................................... 13
+3.2.1 ICARTT and Other ASCII Formats................................................................................... 13
+3.2.2 Vector Data and Shapefiles............................................................................................ 14
+3.2.3 HDF5............................................................................................................................... 14
+3.2.4 HDF-EOS5 ....................................................................................................................... 15
+3.2.5 Legacy Formats .............................................................................................................. 15
+3.2.6 Other Formats................................................................................................................ 15
+4 METADATA..................................................................................................................... 15
+4.1 Overview ........................................................................................................................ 15
+4.1.1 Data Product Search and Discovery .............................................................................. 16
+4.1.2 File Search and Retrieval................................................................................................ 17
+4.1.3 Data Usage ..................................................................................................................... 17
+4.2 Naming Data Products................................................................................................... 18
+4.2.1 Long Name ..................................................................................................................... 18
+4.2.2 Short Name .................................................................................................................... 19
+4.3 Versions.......................................................................................................................... 20
+4.4 Representing Coordinates ............................................................................................. 21
+4.4.1 Latitude and Longitude.................................................................................................. 21
+4.4.2 Time................................................................................................................................ 22
+4.4.3 Vertical ........................................................................................................................... 23
+4.5 Data Quality.................................................................................................................... 23
+4.5.1 Quality Information in Data Product Documentation................................................... 23
+4.5.2 Quality Information in Product Metadata..................................................................... 25
+4.6 Global Attributes............................................................................................................ 25
+4.6.1 Provenance .................................................................................................................... 25
+4.7 Variable-Level Attributes............................................................................................... 26
+5 DATA COMPRESSION, CHUNKING AND PACKING ......................................................... 26
+6 TOOLS FOR DATA PRODUCT TESTING ........................................................................... 27
+6.1 Data Inspection .............................................................................................................. 27
+6.2 Compliance Checkers..................................................................................................... 28
+6.3 Internal Metadata Editors.............................................................................................. 29
+6.4 End-User Tools............................................................................................................... 30
+7 DATA PRODUCT DIGITAL OBJECT IDENTIFIERS.............................................................. 31
+8 PRODUCT DELIVERY AND PUBLICATION........................................................................ 31
+9 REFERENCES ................................................................................................................... 32
+10 AUTHORS’ ADDRESSES................................................................................................... 40
+11 CONTRIBUTORS AND EDITORS ...................................................................................... 40
+APPENDIX A. ABBREVIATIONS AND ACRONYMS ....................................................................... 42
+APPENDIX B. GLOSSARY ............................................................................................................. 45
+APPENDIX C. PRODUCT TESTING WITH DATA TOOLS................................................................ 47
+C.1 Panoply........................................................................................................................... 47
+C.2 HDFView......................................................................................................................... 48
+APPENDIX D. IMPORTANT GLOBAL ATTRIBUTES....................................................................... 50
+D.1 Interpretability ............................................................................................................... 50
+D.2 Discovery ........................................................................................................................ 52
+D.3 Geolocation.................................................................................................................... 54
+D.4 Temporal Location ......................................................................................................... 57
+D.5 Usability.......................................................................................................................... 58
+D.6 Provenance .................................................................................................................... 59
+D.6.1 General........................................................................................................................... 59
+D.6.2 Attribution...................................................................................................................... 60
+D.6.3 Lineage ........................................................................................................................... 62
+APPENDIX E. IMPORTANT VARIABLE-LEVEL ATTRIBUTES.......................................................... 64
+LIST OF FIGURES
+Figure 1. Flow of activities for data product development, production, and delivery (the numbers in
+parentheses in the figure indicate the sections where the individual steps are discussed).................. 7
+Figure 2 The horizontal dimensions (along_track and cross_track) and coordinates (latitude and
+longitude) for a sun-synchronous swath product. In some products the horizontal dimensions and
+coordinates can be one and the same (i.e., latitude and longitude). .................................................. 12
+Figure 3. Screenshots from Earthdata Search for scenes from two Level 2 satellite data products. .. 17
+Figure 4. A screenshot of the Panoply software environment demonstrating a georeferenced twodimensional image............................................................................................................................... 47
+Figure 5. A screenshot of the Panoply software environment demonstrating a deviation from the CF
+Conventions......................................................................................................................................... 48
+Figure 6. A screenshot of the HDFView software environment demonstrating how to view the
+dimension “LST” of a data swath......................................................................................................... 49
+LIST OF TABLES
+Table 1. Examples of data products named using the recommended naming conventions............... 19
+Table 2. Useful tools for inspecting netCDF-4 and HDF5 data. The types of tools include commandline interface (CLI) and desktop graphical user interface (GUI)........................................................... 28
+Table 3. Useful tools for editing netCDF-4 and HDF5 metadata and data. The types of tools include
+command-line interface (CLI) and desktop graphical user interface (GUI).......................................... 30
+Table 4: Frequently used end-user tools............................................................................................. 30
+1 INTRODUCTION
+The National Aeronautics and Space Administration’s (NASA’s) Earth Observing System Data and
+Information System (EOSDIS) is a major capability in the Earth Science Data Systems (ESDS) Program
+[1]. EOSDIS Science Operations (data production, archive, distribution, and user services), which are
+managed by the Earth Science Data and Information System (ESDIS) Project [2], are performed
+within a system of interconnected Science Investigator-led Processing Systems (SIPSs) and disciplinespecific data centers called Distributed Active Archive Centers (DAACs).
+This Data Product Development Guide (DPDG) for Data Producers was produced for EOSDIS by the
+Earth Science Data System Working Groups (ESDSWGs) [3] under the supervision of the ESDIS
+Project to aid in the development of NASA Earth Science data products. This version is a minor
+update to the DPDG V1.0 [4] that includes several editorial corrections and changes identified during
+the creation of the Quick Start Guide (QSG) [5] to the EOSDIS Data Product Development Guide
+(DPDG) for Data Producers . This document will be periodically updated as the need arises.
+The DPDG is intended for those who develop Earth Science data products and are collectively
+referred to as “data producers” (see Appendix B). This guide is primarily intended for producers of
+Earth Science data products derived from remote sensing data, and particularly for the development
+of Level 1B through Level 4 products [6]. However, producers of related data products including
+Level 0 and 1A satellite data, airborne and ground-based data products will also find useful guidance.
+There is an abundance of documents (e.g., standards, conventions, best practices, data format
+manuals) to direct developers in all aspects of designing and implementing data products. Moreover,
+some DAACs have developed guides for particular data producers and specific scientific communities
+[7] [8] [9] [10] [11] [12]. The DPDG aims to compile the most applicable parts of existing guides into
+an easy-to-follow document that logically outlines the typical development process for Earth Science
+data products. Emphasis has been given to standards and best practices formally endorsed by the
+ESDIS Standards Office (ESO) [13], findings from ESDSWGs, and recommendations from DAACs and 
+experienced data producers. This version of the DPDG does not provide any explicit
+recommendations regarding cloud storage and computation, which is recognized as an emerging
+area of high interest and need for both current and future NASA earth science missions. A future
+version will address this evolving topic.
+Ultimately, the DPDG provides developers with guidelines for how to make data products that best
+serve end user communities—the primary beneficiaries of data product development.
+The data products are assumed to be archived at a DAAC, and the data producers should work
+closely with the DAACs to which their products are assigned to obtain details not covered in this
+document.
+The rest of the document is organized as follows. Section 2 covers the overall design and
+development process, including determination of requirements, design, implementation, testing,
+and independent review. Section 3 addresses selection of data formats. It covers recommended
+formats, other recognized formats, and data structures. The focus of Section 4 is on metadata. After
+a brief overview, recommended data product naming conventions, versioning, coordinate
+representation, and global as well as variable-level attributes are covered. Section 5 is a discussion of
+data chunking and compression. Section 6 provides a description of tools useful in data product
+development, including end-user tools with which the data producers should test data products to
+ensure their usability. Section 7 covers Digital Object Identifiers (DOIs) and actions data producers
+should take in collaboration with the DAACs. Section 8 describes the data publication process, once
+the data products are delivered to a DAAC. The organization of these sections is illustrated in the
+flow chart (Figure 1) that shows the various steps in data product development and delivery. The
+numbers in parentheses in the figure indicate the sections where the individual steps are discussed.
+Following Section 8, a bibliography, a list of contributing authors and editors, abbreviations and
+acronyms, and a glossary are included. Finally, three appendices provide details of some tools, and
+important attributes that should be included in product metadata.
+Figure 1. Flow of activities for data product development, production, and delivery (the numbers in
+parentheses in the figure indicate the sections where the individual steps are discussed).
+2 DATA PRODUCT DESIGN PROCESS
+For this guide, a data product (see Appendix B) is defined as a set of data files that can have multiple
+parameters, which compose a logically meaningful group of related data [14]. This concept is
+equivalent to a data collection (see Appendix B) in the Common Metadata Repository (CMR) [15],
+and is known colloquially as a dataset (see Appendix B).
+Based on the Earth Observing System (EOS) heritage [16], standard Earth Science data products have
+the following characteristics:
+• Peer-reviewed algorithmic basis.
+• Wide research and application utility.
+• Routinely produced over spatially and temporally extensive subsets of data.
+• Available whenever and wherever the appropriate input data are available.
+The following subsections discuss steps that can be applied in order to achieve a good data product
+design.
+2.1 Requirements: Determining User Community Needs
+At the beginning of the design process, the key elements are to: 1) identify the expected user
+communities, and 2) understand their needs regarding data formats, data structures, and metadata,
+in addition to what is required for data search and discovery. Developers can acquire this
+information by surveying the scientific literature, browsing predecessor data, holding and attending
+data applications workshops, and working with the DAAC that will archive the data product. While it
+is important to do this early in the product development process, it is equally important to
+remember that as Earth Science evolves to serve novel uses, user communities can change
+significantly. This is especially true in the case of long-term projects that involve several
+reprocessing episodes, where such changes could be accommodated in later versions of the
+products.
+Once user communities are identified, the key questions to answer are:
+• How can these data be used by the identified communities?
+• Which tools and services will the community need to use the data?
+• Are there common workflows applied to the data (e.g., subset >> quality filter >> re-grid)?
+• What are the prevalent data formats, data and metadata standards, and data structures
+used by the community?
+• How does or should the community discover new data products (e.g., are there common
+keywords?)?
+• What constraints does the community face (e.g., limited processor, disk storage, network
+bandwidth and timeliness)?
+• What temporal and spatial resolutions, map projections and/or coordinate systems are
+commonly used in the community?
+• What information on data provenance (data product history and lineage) and quality will the
+users need for their purposes?
+• What other information do the users need to assess the suitability of the data?
+• How should the data product be designed to make it useful to unexpected user communities
+(e.g., make the files self-describing)?
+• What associated knowledge should be preserved [17] in addition to the data for the benefit
+of (long-term) future users, when data producers are no longer available for consultation?
+2.2 Design: What Constitutes a Data Product Design
+A data product design should address the following:
+• Data format and associated conventions (Section 3).
+• Identification and structure of constituent variables (Section 3.2).
+• Metadata (Section 4).
+• Representation of coordinates, especially geolocation and time (Section 4.4).
+• Data chunking and internal compression (Section 5).
+2.3 Implementation: Creating Sample Data Files
+The data producer should create sample data files to support evaluation of the data product design.
+The more realistic the sample data, the more helpful it is for evaluating the usefulness and
+appropriateness of the design; however, even a product populated with random science data values
+can be suitable for checking usability. Sample data coordinates should be accurately populated, as
+these are critical to the use of tools on a data product. The data format Application Programming
+Interface (API) and various tools (Section 6) can be used to quickly create sample data files.
+2.4 Testing: Evaluating Sample Data Products
+Testing of data products should be performed with the tools and services that user communities are
+expected to employ (see Section 6). Typically, testing will identify structural issues of the data, such
+as missing or mis-identified variables and attributes. The data products should also be tested using
+compliance checkers (Section 6.2). Each data producer should consult with their DAAC regarding the
+available compliance checkers and how to use these tools. Ideally, an iterative approach should be
+followed—supply the data product to selected representatives of the expected user communities
+and DAACs, integrate feedback, re-test the product, and solicit additional feedback.
+2.5 Review: Independent Evaluation of the Data Product
+Soliciting external, independent evaluations will improve the quality and usability of a data product.
+The following are recommendations for establishing and conducting such reviews throughout the
+product life cycle.
+• Obtain reviews from the distributors of the data product (i.e., the relevant DAAC).
+• To maintain objectivity, the evaluators should not be directly involved in the development of
+the data product. Ideally, evaluators should be representatives of the expected user
+communities.
+• Perform multiple reviews during the development process to receive guidance well before
+the release of the product. Any resulting corrections should be documented.
+• Feedback ought to be about both the content and quality of the data product. Four aspects
+of quality are defined in [18], namely scientific quality, product quality, stewardship quality
+and service quality. At this stage, the scientific and product quality are of primary concern.
+The content and quality should also help improve the applicability of the data product for
+specific uses.
+• Responses to reviewers’ comments should be documented, and provide the evaluators with
+feedback on the disposition of their comments, clarifying any misunderstanding of the
+comments as needed.
+• Reviews should address various aspects of the data product, including capabilities for search,
+access, exploration, analysis, interoperability, and usage.
+• Reviews should verify that the data files and their variables have suitable names and enough
+supporting information to be understood.
+• While data product user guides (i.e., those provided when users retrieve a data product or
+file) are essential to the usage of a data product, the data product ought to be selfdescribing (i.e., be embedded with metadata that describe the format and the meaning of
+the data).
+It is also helpful to have a mechanism for the user community to provide feedback on the
+usability and quality of the data after the products are released, by including enough
+information in the data product metadata for the users to contact the data producer, or by
+working with the steward DAAC to glean relevant user feedback.
+3 SELECTING A DATA PRODUCT FORMAT
+Selecting a storage format for a data product involves weighing the advantages and disadvantages of
+the applicable formats. Note that although the selected data format may not satisfy all users of a
+product, given sufficient user demand for a particular output format, EOSDIS can usually provide
+reformatting services to cater to a variety of preferences in the user community. The data producers
+are advised to consult with their assigned DAACs to determine what reformatting services are
+available or can be implemented for satisfying the expected user community demand. Below are
+important considerations when selecting a format.
+• Does the format provide for the widest possible use of the data product, including
+potentially new applications and research beyond the original intentions?
+• Is the format widely used in the target user community for similar data or similar data
+analysis workflows?
+• Is the format the same format as used for past long-term observations or models, and
+therefore can provide for or enable more efficient data processing and interoperability with
+those observations or models?
+• Does the format enable efficient data analysis workflows on both global and local scales, and
+over long time periods as well as relatively near real time? Local (as opposed to global scale)
+applications will often require frequent subsetting, reprojection or reformatting of the data
+for combination or intercomparison with in situ point observations and physical models.
+• Would it serve the user community better if the data were written in the same legacy format
+as was used for past or long-term observations for consistency, or in a format compatible
+with data from other agencies, e.g., the National Oceanic and Atmospheric Administration
+(NOAA) or the United States Geological Survey (USGS), to increase interoperability?
+• Does the format support “self-describing” files, meaning that files contain sufficient
+metadata that describe the contents of the file?
+• Does the format provide for efficient use of storage space (e.g., internal compression of data
+arrays), keeping file sizes practical for intended users, while minimizing the need to access
+multiple external files?
+• Is the format supported by popular third-party applications (see Section 6) and programming
+environments, which could expand the user base and promote further development of tools
+and services?
+• Is the version of the format supported by user community tools? The version of the format
+can be important: newly released formats may not be readable by the library and tool
+versions in use by the user community.
+• Are resources available to support the format? This includes people who can develop and
+maintain libraries, tools, and documentation for working with the format. It should also
+include a commitment to long-term support of the format.
+• Have optimizations, such as streaming, been considered (depending on the capabilities of
+the host facilities, and the envisioned use cases)?
+Adherence to a well-defined set of specifications supports interdisciplinary data access, data sharing,
+research, and applications. The ESDIS Standards Office (ESO) [13] maintains approved standards,
+including those for data format, metadata, and data search and access [19]. For each of the items,
+the corresponding web page provides the strengths, weaknesses, applicability, and limitations. Also,
+information is provided on deprecated standards and practices.
+3.1 Recommended Formats
+While a number of acceptable formats are listed by the ESDIS Standards Office (ESO) [20], the
+preferred format for EOSDIS data products is netCDF-4 (network Common Data Form Version 4) [21].
+The most common implementation of the netCDF-4 format uses the Hierarchical Data Format
+Version 5 (HDF5) [22] data storage format. Although files in netCDF-4 can in theory be written
+through HDF5 libraries and APIs, inadvertent use of certain HDF5 features can render files
+unreadable by the rich ecosystem of netCDF tools, so we recommend use of the netCDF API for all
+but the data format elites. The ESDIS Standards Office review of the netCDF-4/HDF5 File Format [21]
+lists the strengths, weaknesses, applicability, and limitations of the format, which the reader may
+find useful.
+Some of the advantages to using netCDF-4 include:
+• “Self-describing” files (see Appendix B);
+• Support for many data storage structures, including multidimensional arrays and raster
+images;
+• Access to useful HDF5 features, such as usability in HDF5 tools such as the HDF Product
+Designer (HPD) [23] and HDFView [24];
+• Naturally accommodating hierarchical groupings of variables;
+• Support for internal data compression;
+• Support for several important programming languages and computing platforms used in
+Earth Science; and
+• Efficient input/output on high performance computing systems.
+Also, a well-established standard called the Climate and Forecast (CF) Metadata Conventions
+(hereafter, CF Conventions – see Appendix B) [25] specifies a set of metadata that provide a
+definitive description of what the data in each variable represent and the spatial and temporal
+properties of the data. The CF Conventions were developed for netCDF; thus, they are sometimes
+referred to as “netCDF/CF.” 
+3.1.1 NetCDF-4
+A netCDF-4 file can include global attributes, dimensions, groups1
+, group attributes, variables, and
+variable-level attributes. The global attributes provide general information regarding the file (e.g.,
+author information, data product version, date-time range). Dimensions can represent: 1) spatiotemporal quantities (e.g., latitude, longitude, time); 2) other physical quantities (e.g., atmospheric
+pressure, wavelength); and 3) instrumental quantities (e.g., along track, cross track, waveband). A
+netCDF variable is an object that usually contains an array of numerical data. The structure of a
+variable is specified by its dimensions. The dimensions included at a given level in the hierarchy can
+be applied to variables at or below that level. Variable-level attributes provide specific information
+for each variable (e.g., coordinates, units, valid range). Groups can be created to contain variables
+with some commonality (e.g., ancillary data, geolocation data, and science data). Group attributes
+apply to everything in a group. Global attributes are attached to the root group.
+Note that “dimensions” and “coordinates” are terms that should not be confused. For example, in a
+Level 2 (L2) swath file, the dimensions can be “along_track” and “cross_track,” while the
+corresponding coordinates can be “latitude,” “longitude,” and “time” (illustrated in Figure 2). The
+coordinates for each variable are specified via the CF coordinates2 attribute.
+Figure 2 The horizontal dimensions (along_track and cross_track) and coordinates (latitude and
+longitude) for a sun-synchronous swath product. In some products the horizontal dimensions and
+coordinates can be one and the same (i.e., latitude and longitude).
+1 Recently, the CF Conventions have been updated to include rules for files with group hierarchies [26]. 2 Words or phrases in this document that are colored purple indicate officially recognized attribute names or
+best practice names.
+Data structures are containers for geolocation and science data. Guidance regarding swath
+structures in netCDF formats is provided in Encoding of Swath Data in the CF Convention [27]. The
+ESDSWG Dataset Interoperability Working Group (DIWG) has provided guidance regarding grid
+structures in netCDF-4 in [28] (Rec. 2.8-2.12) and [29] (Rec. 3.6). NOAA has provided a set of netCDF
+format templates for various types of data products [30], though these should be considered as
+informative, not definitive. Data producers can obtain guidance and samples from their DAAC.
+Earthdata Search [31] can also be used to acquire a variety of data in different formats and
+structures.
+3.1.2 GeoTIFF
+The GeoTIFF (Georeferenced Tagged Image File Format, *.tif) format is a georeferenced raster image
+that uses the public domain Tagged Image File Format (TIFF) [32], and is used extensively in the
+Geographic Information System (GIS) [33] and Open Geospatial Consortium (OGC) communities [34].
+Although the types of metadata that can be added to GeoTIFF files are much more limited than with
+netCDF-4 and HDF5, the OGC GeoTIFF Standards Working Group is planning to work on reference
+system metadata in the near term. Both data producers and users find this file format easy to
+visualize and analyze, and so it has many uses in Earth Science. OGC GeoTIFF Standard, Version 1.1 is
+an EOSDIS recommended format [35]. Recently, a cloud-optimized profile for GeoTIFF (called COG)
+has been developed to make retrieval of GeoTIFF data from Web Object Storage (see Appendix B)
+more efficient [36]. See [35] for a discussion of strengths, weaknesses, applicability, and limitations
+of GeoTIFF.
+3.2 Recognized Formats
+In some cases, where the dominant user communities for a given data product have historically used
+other formats, it may be more appropriate to continue to use those formats instead of the formats
+recommended above. If such formats are not already on ESO’s list of approved data formats, they
+can be submitted to ESO for review and approval following the Request for Comments instructions
+[37].
+3.2.1 ICARTT and Other ASCII Formats
+The International Consortium for Atmospheric Research on Transport and Transformation (ICARTT)
+Version 2 format [38] arose from a consensus established across the atmospheric chemistry
+community for visualization, exchange, and storage of aircraft instrument observations. The format
+is text-based and composed of a metadata section (e.g., data source, uncertainties, contact
+information, and brief overview of measurement technique), and a data section. Although it was
+primarily designed for airborne data, the format is also used for other mobile and ground-based
+studies.
+The simplicity of the ICARTT format allows files to be created and read with a single subprogram for
+multiple types of collection instruments and can assure interoperability between diverse user
+communities. However, ICARTT stores numbers using the American Standard Code for Information
+Interchange (ASCII), which can be far less efficient than binary formats such as netCDF-4, HDF5 or
+GeoTIFF regarding both data access and file size. Note that netCDF-4, HDF5 and GeoTIFF allow for
+the internal compression of variables, which results in a much smaller file size than any ASCII 
+equivalent (see Section 5). Another disadvantage of ASCII is that print-read consistency is often lost.
+Two different programs that read the data could convert the ASCII to different binary numbers in the
+low order bits. This could complicate certain aspects of software engineering such as unit tests. See
+[38] for a discussion of strengths, weaknesses, applicability, and limitations of the ICARTT format.
+Other ASCII formats included in ESO’s list of approved standards are: NASA Aerogeophysics ASCII File
+Format Convention, SeaBASS Data File Format, and YAML Encoding ASCII Format for GRACE/GRACEFO Mission Data. In addition to ICARTT, these formats have been evaluated with respect to the ASCII
+File Format Guidelines for Earth Science Data [39] .
+3.2.2 Vector Data and Shapefiles
+The OGC GeoPackage is a platform-independent and standards-based data format for geographic
+information systems implemented as a SQLite database container (*.gpkg) [40]. It can store vector
+features, tile matrix sets of imagery and raster maps at various scales, and extensions in a single file.
+OGC has standardized the KML (Keyhole Markup Language, *.kml) format that was created by
+Keyhole, Inc. and is based on XML (eXtensible Markup Language) [41]. The format delivers browselevel data (e.g., images) and small amounts of vector data (e.g., sensor paths, region boundaries,
+point locations), but it is voluminous for storing large data arrays. KML supports only the geographic
+projection (i.e., evenly spaced longitude and latitude values), which can limit its usability. The format
+combines cartography with data geometry in a single file, which allows users flexibility to encode
+data and metadata in several different ways. However, this is a disadvantage to tool development
+and limits the ability of KML to serve as a long-term data archive format. OpenGIS KML is an
+approved standard for use in EOSDIS. As noted in the recommendation, KML is primarily suited as a
+publishing format for the delivery of end-user visualization experiences. There are significant
+limitations to KML as a format for the delivery of data as an interchange format [42].
+A Shapefile is a vector format for storing geometric location and attribute information of geographic
+features, and requires a minimum of three files to operate: the main file that stores the feature
+geometry (*.shp), the index file that stores the index of the feature geometry (*.shx), and the dBASE
+table that stores the attribute information of features (*.dbf) [43] [44]. Geographic features can be
+represented by points, lines, or polygons (areas). Geometries also support third and fourth
+dimensions as Z and M coordinates, for elevation and measure, respectively. Each of the component
+files is limited to 2 GB. Shapefiles have a number of limitations that impact storage of scientific data.
+“For example, they cannot store null values, they round up numbers, they have poor support for
+Unicode character strings, they do not allow field names longer than 10 characters, and they cannot
+store both a date and time in a field” [45]. Additional limitations are listed in the cited article.
+3.2.3 HDF5
+HDF5 is a modern data format designed to store and organize large amounts of data. NetCDF-4
+(Section 3.1.1) and HDF-EOS5 (Section 3.2.4) are both built on HDF5. We strongly recommend that
+netCDF-4 be used for new Earth Science data products instead of HDF5, because Earth Science
+product files in HDF5 need to be compatible with netCDF-4 (i.e., readable via the netCDF-4 API) in
+order to work with netCDF-4 tools, and only very experienced product developers will be able to
+achieve this goal using the HDF5 API.
+3.2.4 HDF-EOS5
+HDF-EOS5 is a specially developed data format for the Earth Observing System based on HDF5,
+which is widely used for NASA Earth Science data products and includes data structures specifically
+designed for Earth Science data.
+HDF-EOS5 employs the HDF-EOS data model [46] [47], which remains valuable for developing Earth
+Science data products. The Science Data Production (SDP) Toolkit [46] and HDF-EOS5 library provide
+the API for creating HDF-EOS5 files that are compliant with the EOS data model.
+In choosing between HDF-EOS5 and netCDF-4 (based on HDF5) with CF conventions, netCDF-4/CF is
+recommended over HDF-EOS5 due to the much larger set of tools supporting the format.
+3.2.5 Legacy Formats
+Legacy formats (e.g., netCDF-3, HDF4, HDF-EOS2, and plain ASCII) are those used in early EOS
+missions, though some missions continue to produce data products in these formats. Development
+of new data products or versions from early missions may continue using the legacy format, but
+product developers are encouraged to transition data to the netCDF-4 format for improved
+interoperability with data from recent missions. Legacy formats are recommended for use only in
+cases where the user community provides strong evidence that research will be hampered if the
+data formats are changed.
+3.2.6 Other Formats
+Some data products are provided by data producers in formats that are not endorsed by ESO,
+especially data collected during field campaigns. Producers of these data are not necessarily NASAfunded; thus, they are not under an obligation to conform to NASA’s format requirements or could
+lack adequate resources to do so.
+There are other formats that are currently evolving in the community, especially with cloud
+computing, big data, and analysis-ready data. As these are adopted and matured, ESO could consider
+them and recommend their use for NASA Earth Science data products. Such recommendations will
+be considered in future versions of this document.
+4 METADATA
+4.1 Overview
+Metadata are information about data. As with the other aspects of data product development, it is
+helpful to consider the purpose of metadata in the context of how users will interact with the data
+and how metadata are associated with (i.e., structurally linked to) the data.
+Metadata are essential for data management: they describe where and how data are produced,
+stored, and retrieved. Metadata are also essential for data search/discovery and interpretation,
+including facilitating the users’ understating of data quality. A data producer has a responsibility to
+provide adequate metadata describing the data product on both the data-product-level and the filelevel. The DAAC that will archive the product is responsible for maintaining the data-product-level
+metadata, but metadata can be augmented with details from the data producer. A subset of data-
+product-level and file-level (sometimes called granule-level) metadata that are relevant to data
+search/discovery is submitted to CMR by the DAACs.
+Data-product- and file-level metadata are stipulated by the policies of the DAAC that will host the
+data. Although CMR has somewhat minimal requirements for metadata, requirements on EOSDIS
+data are expected to exceed those in order to render the data searchable and usable. The data
+producers should also follow best practices for including metadata within or associated with the
+individual data files that are submitted to the DAAC. Data producers should work with the DAACs to
+determine the best approach for their products.
+File-level metadata can be created for and associated with a data product through several methods.
+Software libraries, such as netCDF and HDF, make populating file-level metadata straightforward.
+Metadata can be assigned to any object within the file, or to the file as a whole. As such, most of the
+recommendations that follow apply to netCDF/HDF files, but a producer of products in other formats
+should aspire to conform to the degree that that format permits.
+The two main categories of file metadata are “global attributes” and “variable-level attributes.” In
+netCDF and HDF it is possible to assign metadata to groups of data objects within a file. Global
+attributes are meant to apply to all information in the file, and can vary from file to file within a data
+product. However, to maximize the self-describing nature of a file, a data producer can also include
+data product metadata, i.e., information that is repeated for all files, within a file. Data product
+metadata describe and are valid for data in each of the files constituting the data product. File-level
+metadata should be embedded in the file itself if using self-describing formats like netCDF. The
+DAACs may require that the metadata be provided both embedded in files and as a separate
+metadata file. File-naming conventions should make sure that the physically separate metadata are
+properly associated with the file to which they refer. Data product files may not contain all the
+available data product metadata (e.g., may not contain everything in related texts such as the
+Algorithm Theoretical Basis Document, ATBD), but they must contain enough metadata to enable
+data search and discovery and scientific analysis using tools capable of recognizing metadata
+standardized for interoperability based on recommendations and standards in this document and
+provided by the DAACs.
+4.1.1 Data Product Search and Discovery
+Metadata may come into play for users for the first time during the search and discovery process—
+when they are searching for data products that meet their needs. As mentioned above, the
+metadata that support this process are typically ingested into the CMR by the DAACs. These
+metadata are used either by the CMR search engine or by other search engines that harvest
+metadata (e.g., data.gov or Google).
+Key success criteria for metadata during the discovery process include:
+• Intelligible, descriptive data product names (Section 4.2).
+• Precise temporal and spatial coverage (Section 4.4 and 4.5).
+• Accurate and complete list of applicable Global Change Master Directory (GCMD) Science
+Keywords [48].
+• Concise but readable (including machine readable) description of the data product.
+Note that because a given data product will be compared to thousands of other data products in the
+archives (approximately 32,000 in the EOSDIS catalog, the CMR), it is crucial to use GCMD keywords
+[48], especially for the platform (e.g., Nimbus-7), instrument (e.g., TOMS), and science (e.g., OZONE)
+keywords. Reference [49] provides links through which various categories of keywords can be
+downloaded in a variety of formats such as comma-separated values (CSV). When the keywords in
+the presently available list of GCMD are not directly applicable to a data product, the data producer
+is advised to follow the proper GCMD list update procedure [50]. Data producers should work closely
+with their assigned DAACs in selecting keywords for their products.
+4.1.2 File Search and Retrieval
+Once a user has chosen a data product to pursue, the user typically needs only some files, not the
+entire data product. Because metadata are standardized, data search engines, such as Earthdata
+Search for CMR [31], support the specification of spatial and temporal criteria (i.e., search filters).
+Therefore, it is best to precisely specify the spatial extent of a given file to limit “false positives” in
+search results. For example, a four-point polygon provides a more precise specification of spatial
+extent than a bounding box (Figure 3). Data producers should consult their assigned DAACs
+regarding methods the DAACs are currently using for specifying bounding regions before deciding
+whether a different approach is needed for their products.
+Figure 3. Screenshots from Earthdata Search for scenes from two Level 2 satellite data products.
+Left: The green box represents the file outline, which is a bounding box provided by the spatial
+extent specified in the metadata. The bounding box results in large areas of “no data” in the
+southwest and northeast corners, where a user selection generates a false positive result. Right:
+True data coverage illustrated with a superimposed browse image and uses a four-point polygon
+with negligible areas where a user selection produces a false positive.
+4.1.3 Data Usage
+Finally, when the data are to be used, high-quality metadata are essential for data readability, not
+only for human users, but also for the software and other non-human users, such as decision
+support systems or models. Because files often contain metadata within them, the aim should be for
+data to be usable without further adjustments by a user—a benchmark known as “Analysis-Ready
+Data” [51], the preparation of which typically includes:
+• Coordinate information: spatial and temporal coordinates in standard form.
+• Interpretation aids: units [29] (Rec. 3.2 and 3.3), fill (missing) value identification (see the
+DIWG Recommendations Part 3 [in preparation]), offset and scale factors [28] (Rec. 2.2, 2.5
+and 2.6).
+• Readable variable names, using standardized GCMD names and CF standard names, where
+applicable. For non-standard names, holding to consistent abbreviations and case
+conventions is advisable.
+In addition, data producers should be mindful of other types of potentially useful documentation to
+facilitate the understanding of data, including but not limited to: provenance information,
+particularly identifiers of the data inputs and algorithm version, and pointers to documentation such
+as ATBDs, and data quality assessment(s). Such documentation should be produced as early as
+possible in the dataset production lifecycle.
+Since the primary purpose of CMR is to support search and discovery, at present, not all the data
+usage information is ingested into CMR. However, as automated data system capabilities are
+evolving to provide higher levels of service for new data products, it is expected that more of the
+data usage information will need to be included in CMR.
+4.2 Naming Data Products
+The name of a data product is critical to its discovery in Earthdata Search and tools developed by the
+DAACs. The DAACs have rules for naming data products, so selection of long and short names should
+be a joint effort between the data producer and the assigned DAAC. DAAC involvement in naming
+also helps in making the data products discoverable and EOSDIS-unique. Data products must be
+assigned both a long name, which is meant to be human readable (and comprehensible), and a short
+name, which aids precise searching by keyword. The data product long name and short name are
+considered global attributes in that they are not associated with any particular variable but are
+related to the data product as a whole.
+There is no universal file-naming convention for NASA Earth Science data products, apart from the
+DIWG recommendations regarding the components of file names provided in [29] (Rec. 3.8-3.11).
+However, filenames should be unique and human-readable and contain information that is
+descriptive of the contents.
+4.2.1 Long Name
+The data product long name (called LongName3 in CMR) is a scientific definition of the product. It
+should be as brief (but as complete) as possible, as it expands on the sometimes-cryptic
+corresponding short name. Specifically, the long name should be a character string from 45-90
+characters to prevent wrapping and enhance readability and scannability in interfaces (such as
+Earthdata Search) [52]. The attribute LongName is synonymous with the CF title attribute used in
+netCDF documentation (see Appendix D.1).
